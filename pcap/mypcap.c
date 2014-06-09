@@ -21,47 +21,32 @@ using namespace std;
                     
 
  //Ethernet header 
-    struct sniff_ethernet {
-        u_char ether_dhost[ETHER_ADDR_LEN];
-        u_char ether_shost[ETHER_ADDR_LEN];
-        u_short ether_type; 
+    struct ethernet {
+        u_char dhost[6];
+        u_char shost[6];
+        u_short type; 
     };
 
-struct sniff_tcp {
-        u_short th_sport;   /* source port */
-        u_short th_dport;   /* destination port */
-        u_int32_t th_seq;       /* sequence number */
-        u_int32_t th_ack;       /* acknowledgement number */
+struct tcp {
+        u_short sport;   /* source port */
+        u_short dport;   /* destination port */
+        u_int32_t seq;       /* sequence number */
+        u_int32_t ack;       /* acknowledgement number */
 
         u_char th_offx2;    /* data offset, rsvd */
-    #define TH_OFF(th)  (((th)->th_offx2 & 0xf0) >> 4)
-        u_char th_flags;
-    #define TH_FIN 0x01
-    #define TH_SYN 0x02
-    #define TH_RST 0x04
-    #define TH_PUSH 0x08
-    #define TH_ACK 0x10
-    #define TH_URG 0x20
-    #define TH_ECE 0x40
-    #define TH_CWR 0x80
-    #define TH_FLAGS (TH_FIN|TH_SYN|TH_RST|TH_ACK|TH_URG|TH_ECE|TH_CWR)
-        u_short th_win;     /* window */
+   
+      u_short th_win;     /* window */
         u_short th_sum;     /* checksum */
         u_short th_urp;     /* urgent pointer */
 };
 
 
-struct sniff_ip {
-        u_char ip_vhl;      /* version */
-        u_char ip_tos;      /* type of service */
-        u_short ip_len;     /* total length */
-        u_short ip_id;      /* identification */
-        u_short ip_off;     /* fragment offset field */
+struct ip {
+        u_char vhl;      /* version */
+        u_char tos;      /* type of service */
+        u_short len;     /* total length */
+        u_short id;      /* identification */
 
-    #define IP_RF 0x8000        /* reserved fragment flag */
-    #define IP_DF 0x4000        /* dont fragment flag */
-    #define IP_MF 0x2000        /* more fragments flag */
-    #define IP_OFFMASK 0x1fff   /* mask for fragmenting bits */
         u_char ip_ttl;      /* time to live */
         u_char ip_p;        /* protocol */
         u_short ip_sum;     /* checksum */
@@ -70,8 +55,8 @@ struct sniff_ip {
     };
 
 
-    #define IP_HL(ip)       (((ip)->ip_vhl) & 0x0f)
-    #define IP_V(ip)        (((ip)->ip_vhl) >> 4)
+    #define IP_HL(ip)       (((ip)->vhl) & 0x0f)
+    #define IP_V(ip)        (((ip)->vhl) >> 4)
  
 int main()
 {
@@ -89,9 +74,9 @@ int main()
      pcap_t * pcap = pcap_open_offline(file.c_str(), errbuff);            //opening the pcap file
  
   //declaring structure objects
-   struct sniff_ethernet *ethernet; /* The ethernet header */
-   struct sniff_ip *ip; /* The IP header */
-   struct sniff_tcp *tcp; /* The TCP header */
+   struct ethernet *ethernet; /* The ethernet header */
+   struct ip *ip; /* The IP header */
+   struct tcp *tcp; /* The TCP header */
 
     u_int size_ip;
     u_int size_tcp;
@@ -123,12 +108,12 @@ int main()
 
 /**************ETHERNET INFO******************************/
            
-    ethernet = (struct sniff_ethernet*)(data);
+    ethernet = (struct ethernet*)(data);
 
-    if (ntohs (ethernet->ether_type) == 0x0800)     //type field of ethernet frame, for ip it is 0x0800
+    if (ntohs (ethernet->type) == 0x0800)     //type field of ethernet frame, for ip it is 0x0800
     {
         printf("\n\nEthernet is an IP packet");
-    }else  if (ntohs (ethernet->ether_type) == 0x0806)    //type field of ethernet frame, for arp it is 0x0806
+    }else  if (ntohs (ethernet->type) == 0x0806)    //type field of ethernet frame, for arp it is 0x0806
     {
         printf("\n\nEthernet is an ARP packet");
     }else {
@@ -136,31 +121,31 @@ int main()
         exit(1);
     }
 
-        ptr=ethernet->ether_dhost;
+        ptr=ethernet->dhost;
         printf("\n\nDESTINATION ADDRESS:");
         for(j=0;j<6;j++)                //mac address is 6 bytess
 	{
 	 printf("%.2x:",*ptr++);
 	}
 
-	ptr = ethernet->ether_shost;
+	ptr = ethernet->shost;
 	printf("\n\nSOURCE ADDRESS:");
 	for(j=0;j<6;j++)              //mac address is 6 bytes
 	{	
 	 printf("%.2x:",*ptr++);
 	}
 
-       ip = (struct sniff_ip*)(data + 14);     //ip info is stored after ethernet info...hence adding size of ethernet...
+       ip = (struct ip*)(data + 14);     //ip info is stored after ethernet info...hence adding size of ethernet...
                                                                //size of ethernet=14....6+6+2
                                                                //size of etheral frame type=2
         size_ip = IP_HL(ip)*4;                   
         
 
         /*********TCP HEADER INFORMATION****************************/
-        tcp = (struct sniff_tcp*)(data + 14 + size_ip);
+        tcp = (struct tcp*)(data + 14 + size_ip);
 
-        printf("\n\nsrc port: %d dest port: %d \n", ntohs(tcp->th_sport), ntohs(tcp->th_dport));
-        printf("\nseq number: %u ack number: %u \n", ntohl(tcp->th_seq), ntohl(tcp->th_ack));
+        printf("\n\nsrc port: %d dest port: %d \n", ntohs(tcp->sport), ntohs(tcp->dport));
+        printf("\nseq number: %u ack number: %u \n", ntohl(tcp->seq), ntohl(tcp->ack));
 
         printf("\nWindow %u \n",tcp->th_win);
         
@@ -170,10 +155,10 @@ int main()
         char dstname[100];
         strcpy(dstname, inet_ntoa(ip->ip_dst));
         printf("\n\nsrc address: %s dest address: %s \n",srcname, dstname);
-        printf("\n\nTYPE OF SERVICE:%d",ip->ip_tos);
+        printf("\n\nTYPE OF SERVICE:%d",ip->tos);
         printf("\n\nTIME TO LIVE:%d",ip->ip_ttl);
-        printf("\n\nIdentification number:%d",ip->ip_id);
-        printf("\n\nTOTAL LENGTH:%x",ip->ip_len);
+        printf("\n\nIdentification number:%d",ip->id);
+        printf("\n\nTOTAL LENGTH:%x",ip->len);
         printf("\n\n");
     }
 }
