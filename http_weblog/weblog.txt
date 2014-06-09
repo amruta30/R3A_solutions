@@ -1,0 +1,67 @@
+					ASSIGNMENT NO1
+
+We did the log file analysis with the hadoop framework. We uploaded the data on hadoop creating a table to store the data. The unstructured data was hence represented in structured format. Further we used Hive for analysis of the data like to find max requests from a particular ip addresses, peak date at which requests had been sent or number of times host got error messages etc.
+
+=========================================================================
+
+Below are the queries we performed.
+
+create table to store weblog data
+CREATE TABLE weblog(									
+host STRING,
+identity STRING,
+user STRING,
+time STRING,
+request STRING,
+status STRING,
+size STRING,
+referer STRING,
+agent STRING)
+ROW FORMAT DELIMITED
+FIELDS TERMINATED BY '*'
+STORED AS TEXTFILE;
+
+1.) returns ip addresses and count sorted in descending order
+
+hive> select host, count(1) as cnt from weblog group by(host) order by cnt desc;
+
+
+2.) returns the date and count sorted in descending order so that 1st indicates when maximum requests were sent
+
+hive>select substr(time,2,11),count(1) as cnt from weblog group by substr(time,2,11) order by cnt DESC; 	 
+
+
+3.) returns request and count sorted in descending order
+
+hive> select request, count(1) as cnt from weblog group by(request) order by cnt desc;			
+
+
+4.) returns how many times a host got 404error
+
+hive>select host,count(1) as cnt from weblog where status=404 group by host;				
+
+
+
+5.) returns the status and corresponding count
+
+hive>select status,count(1) from weblog group by status;						
+	
+
+6.) creates a view from original table
+
+hive>CREATE VIEW weblogview AS SELECT host,time,request,referer,agent FROM weblog;			
+
+
+7.) returns agent & corresponding count
+
+hive>select agent,count(1) as cnt from weblogview group by agent;
+
+
+
+
+
+
+		
+
+
+

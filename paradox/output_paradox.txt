@@ -1,0 +1,38 @@
+
+
+	BIRTHDAY PARADOX
+
+	Enter number of people: 
+23
+
+Probability is: 50.800003%
+
+ 1.Continue 
+ 0. exit
+1
+
+	Enter number of people: 
+45
+
+Probability is: 94.3%
+
+ 1.Continue 
+ 0. exit
+1
+
+	Enter number of people: 
+70
+
+Probability is: 99.9%
+
+ 1.Continue 
+ 0. exit
+1
+
+	Enter number of people: 
+365
+
+Probability is: 100.0%
+
+ 1.Continue 
+ 0. exit

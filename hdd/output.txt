@@ -1,0 +1,22 @@
+*****************DUPLICATE FILES ARE:**************--
+E:\sample\Pict.txt
+E:\sample\yummy\pict.txt
+--
+E:\sample\c codes\credenz.txt
+E:\sample\credenz.txt
+E:\sample\yummy\credenz.txt
+--
+E:\sample\c codes\dir_sub_C.c
+E:\sample\dir_sub_C.c
+--
+E:\sample\c codes\inc.txt
+E:\sample\inc.txt
+Do you want to delete any duplicate files:1)YES 2)NO
+1
+--
+E:\sample\Pict.txt
+DO YOU WANT DELETE THE DUPLICATE FILE 1)NO 2)YES
+2
+File Successfully Deleted
+E:\sample\yummy\pict.txt
+DO YOU WANT DELETE THE DUPLICATE FILE 1)NO 2)YES
